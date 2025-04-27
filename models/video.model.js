@@ -6,7 +6,7 @@ const Video = sequelize.define('Video', {
   duration: { type: DataTypes.FLOAT },
   size: { type: DataTypes.INTEGER },
   originalPath: { type: DataTypes.STRING },
-  trimmedPath: { type: DataTypes.STRING },
+  editedPath: { type: DataTypes.STRING },
   finalPath: { type: DataTypes.STRING },
   status: { type: DataTypes.ENUM('uploaded', 'processing', 'rendered'), defaultValue: 'uploaded' },
 });

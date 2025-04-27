@@ -1,0 +1,280 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "Video Editing API",
+    "version": "1.0.0",
+    "description": "API for uploading and processing video files."  },
+  "host": "localhost:3020",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Video",
+      "description": "Operations related to video editing"
+    }
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "paths": {
+    "/api/video/upload": {
+      "post": {
+        "summary": "Upload video",
+        "tags": ["Video"],
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "in": "formData",
+            "name": "video",
+            "type": "file",
+            "required": true,
+            "description": "The video file to upload."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Video uploaded successfully.",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "filename": {
+                  "type": "string",
+                  "description": "The name of the saved file."
+                },
+                "url": {
+                  "type": "string",
+                  "description": "The URL where the uploaded video can be accessed."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid file format or size."
+          },
+          "500": {
+            "description": "Internal server error."
+          }
+        }
+      }
+    },
+    "/api/video/{id}/trim": {
+      "post": {
+        "tags": ["Video"],
+        "summary": "Trim a video",
+        "description": "Trim a video between start and end timestamps.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Video ID",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Trim parameters",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TrimRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trimmed video info",
+            "schema": {
+              "$ref": "#/definitions/Video"
+            }
+          },
+          "500": {
+            "description": "Trimming failed"
+          }
+        }
+      }
+    },
+    "/api/video/{id}/subtitles": {
+      "post": {
+        "tags": ["Video"],
+        "summary": "Add subtitles to a video",
+        "description": "Overlay text subtitles onto a video between start and end times.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Video ID",
+            "required": true,
+            "type": "integer"
+          },
+          {
+            "in": "body",
+            "name": "body",
+            "description": "Subtitle parameters",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SubtitleRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Subtitled video info",
+            "schema": {
+              "$ref": "#/definitions/Video"
+            }
+          },
+          "500": {
+            "description": "Adding subtitles failed"
+          }
+        }
+      }
+    },
+    "/api/video/{id}/render": {
+      "post": {
+        "summary": "Render Video",
+        "tags": ["Video"],
+        "description": "Renders the video by processing the edited or original video and creates a final output.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the video to render",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Video rendered successfully",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "example": "Rendered successfully"
+                },
+                "result": {
+                  "$ref": "#/definitions/Video"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing video ID for rendering"
+          },
+          "500": {
+            "description": "Failed to render the video"
+          }
+        }
+      }
+    },
+    "/api/video/{id}/download": {
+      "get": {
+        "summary": "Download Video",
+        "tags": ["Video"],
+        "description": "Downloads the final rendered video.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the video to download",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/octet-stream"
+        ],
+        "responses": {
+          "200": {
+            "description": "Video file download will be triggered"
+          },
+          "400": {
+            "description": "Missing video ID for download"
+          },
+          "404": {
+            "description": "Video file not found for download"
+          },
+          "500": {
+            "description": "Failed to download the video"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "TrimRequest": {
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "type": "number",
+          "example": "110"
+        },
+        "endTime": {
+          "type": "number",
+          "example": "120"
+        }
+      },
+      "required": ["startTime", "endTime"]
+    },
+    "SubtitleRequest": {
+      "type": "object",
+      "properties": {
+        "text": {
+          "type": "string",
+          "example": "Hello World!"
+        },
+        "startTime": {
+          "type": "number",
+          "example": 100
+        },
+        "endTime": {
+          "type": "number",
+          "example": 360
+        }
+      },
+      "required": ["text", "startTime", "endTime"]
+    },
+    "Video": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "name": {
+          "type": "string",
+          "example": "video.mp4"
+        },
+        "originalPath": {
+          "type": "string",
+          "example": "uploads/video.mp4"
+        },
+        "trimmedPath": {
+          "type": "string",
+          "example": "uploads/trimmed_1617978845.mp4"
+        },
+        "finalPath": {
+          "type": "string",
+          "example": "rendered/final_1617978899.mp4"
+        },
+        "status": {
+          "type": "string",
+          "example": "processing"
+        },
+        "size": {
+          "type": "integer",
+          "example": 1024000
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+  },
+  "security": [
+ 
+  ]
+}
+

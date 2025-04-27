@@ -19,3 +19,8 @@ router.post('/:id/render', videoController.renderVideo);
 router.get('/:id/download', videoController.downloadVideo);
 
 module.exports = router;
+
+
+
+
+// :id comes before the action because it points to which resource you're acting on.
