@@ -4,6 +4,8 @@ const db = require('./config/db.js');
 const videoRoutes = require('./routes/video.route.js');
 const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./swagger.json');
+require('./workers/renderWorker.js')
+require('./workers/notificationWorker.js')
 
 const app = express();
 app.use(express.json());
@@ -18,7 +20,6 @@ const PORT = process.env.PORT || 4050;
 app.get('/', (req,res) =>{
    res.send('welcome to video editor backend')
 } )
-
 
 const initApp = async () => {
   console.log("Testing the database connection..");
